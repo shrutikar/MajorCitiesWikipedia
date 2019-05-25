@@ -18,32 +18,23 @@ for link in links.findAll('tr'):
 
 df=pd.DataFrame()
 df['City']=City
-# print(df)
+print(df)
 c=0
+Information = ['City', 'State', 'Coordinates', 'Area-Total','Area-Land','Area-Water','Area-Metro','Elevation','PopulationEstimate','Timezones','ZipCodes','AreaCodes']
+city,State,Coordinates,AreaTotal,AreaLand,AreaWater,AreaMetro,Elevation,PopulationEstimate,Timezones,ZipCodes,AreaCodes=[],[],[],[],[],[],[],[],[],[],[],[]
 for link in Link:
     url = requests.get("https://en.wikipedia.org"+link).text
     soup = BeautifulSoup(url, "lxml")
     table = soup.find('table',{'class': 'infobox geography vcard'})
     results = table.find_all('tr')
-    # print(type(results))
-    # print('Number of results', len(results))
-    # print(results)
-    # fresult = [e.text for e in results]
-    # print(fresult)
-    # result = {}
-    # exceptional_row_count = 0
     for i,tr in enumerate(table.find_all('tr')):
         print(i,tr.text)
-    #     if tr.find('th'):
-    #         print (tr.find('td'))
-    #         result[tr.find('th').text] = tr.find('td').text
-    #     else:
-    #         # the first row Logos fall here
-    #         exceptional_row_count += 1
-    # if exceptional_row_count > 1:
-    #     print('WARNING ExceptionalRow>1: ', table)
-    # print(result)
-    if c>2:
+        string=str(tr.text).lower()
+        if string[0:5] == 'state':
+            print("{0}".format('*'*10))
+            print(string.split('state')[1].strip(" "))
+    if c>0:
         break
     else:
         c+=1
+# print(State)
