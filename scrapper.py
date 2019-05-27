@@ -43,7 +43,6 @@ for link in Link:
         if 'http://dbpedia.org/ontology/'+k in uri and k != 'timeZone' and k != 'governmentType':
             information[k].append(uri['http://dbpedia.org/ontology/' + k][0]['value'])
         elif 'http://dbpedia.org/ontology/'+k in uri and (k == 'governmentType' or k == 'timeZone'):
-            print(k)
             information[k].append(uri['http://dbpedia.org/ontology/' + k][0]['value'][28:])
         else:
             information[k].append(None)
@@ -51,3 +50,4 @@ for link in Link:
 for k,v in information.items():
     df[k]=v
 print (df)
+df.to_csv("MajorCities.csv", sep='\t')
