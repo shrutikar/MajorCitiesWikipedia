@@ -50,4 +50,4 @@ for link in Link:
 
 for k,v in information.items():
     df[k]=v
-print (df['timeZone'],df['governmentType'])
+print (df)
