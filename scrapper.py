@@ -22,64 +22,74 @@ Link=[]
 for link in links.findAll('tr'):
     if link.findAll('td'):
         City.append(str(link.findAll('td')[1].find_all('a')[0].get("title")))
-        Link.append(str(link.findAll('td')[1].find_all('a')[0].get("href")))
+        Link.append(str(link.findAll('td')[1].find_all('a')[0].get("href").replace("%E2%80%93","-")))
 
 df=pd.DataFrame()
 df['City']=City
 # print(df)
-c=0
-Information = ['City', 'State', 'Coordinates', 'Area-Total','Area-Land','Area-Water','Area-Metro','Elevation','PopulationEstimate','Timezones','ZipCodes','AreaCodes']
-city,State,Coordinates,AreaTotal,AreaLand,AreaWater,AreaMetro,Elevation,PopulationEstimate,Timezones,ZipCodes,AreaCodes=[],[],[],[],[],[],[],[],[],[],[],[]
-for link in Link:
-    # url = requests.get("https://en.wikipedia.org"+link).text
-    # soup = BeautifulSoup(url, "lxml")
-    # table = soup.find('table',{'class': 'infobox geography vcard'})
-    # results = table.find_all('tr')
-    # # for i,tr in enumerate(table.find_all('tr')):
-    # #     print(i,tr.text)
-    # #     string=str(tr.text).lower()
-    # #     if string[0:5] == 'state':
-    # #         # print("{0}".format('*'*10))
-    # #         State.append(strip_non_ascii(string.split('state')[1]).strip(" ").strip("\n"))
-    # #     if string[0:11] == 'coordinates':
-    # #         # print("{0}".format('*' * 10))
-    # #         # print(string.split('coordinates')[1].strip(" ").strip(":"))
-    # #         Coordinates.append(string.split('coordinates')[1].strip(" ").strip(":").replace("\ufeff"," "))
-    # #     if strip_non_ascii(string).strip(" ")[0:5]=='total':
-    # #         print("{0}".format('*' * 10))
-    # #         print(string.split('total')[1].strip(" ").strip(":"))
 
+information ={
+    'postalCode' : [],
+    'areaCode' : [],
+    'areaLand' : [],
+    'areaWater' : [],
+    'elevation' : [],
+    'populationTotalRanking' : [],
+    'utcOffset' : [],
+    'areaTotal' : [],
+    'governmentType' : [],
+    'leaderTitle' : [],
+    'populationDensity' : [],
+    'populationTotal' : [],
+    'establishedDate' : [],
+    'latd': [],
+    'longd': [],
+    'areaMetro' : [],
+    'timeZone' : []
+}
+
+for link in Link:
     print(link[6:])
 
     data = requests.get('http://dbpedia.org/data/'+link[6:]+'.json').json()
-    matteo = data['http://dbpedia.org/resource/'+link[6:]]
-    # postalcode = matteo['http://dbpedia.org/ontology/postalCode'][0]['value']
-    areacode = matteo['http://dbpedia.org/ontology/areaCode'][0]['value']
-    arealand = matteo['http://dbpedia.org/ontology/areaLand'][0]['value']
-    areawater = matteo['http://dbpedia.org/ontology/areaWater'][0]['value']
-    elevation = matteo['http://dbpedia.org/ontology/elevation'][0]['value']
+    uri = data['http://dbpedia.org/resource/'+link[6:]]
+    for k,v in information.items():
+        if 'http://dbpedia.org/ontology/'+k in uri and k != ('timeZone' and 'governmentType'):
+            information[k].append(uri['http://dbpedia.org/ontology/'+k][0]['value'])
+        elif 'http://dbpedia.org/ontology/'+k in uri and k == ('governmentType' or 'timeZone'):
+            information[k].append(uri['http://dbpedia.org/ontology/' + k][0]['value'][28:])
+        else:
+            information[k].append(None)
+    # areacode = matteo['http://dbpedia.org/ontology/areaCode'][0]['value']
+    # arealand = matteo['http://dbpedia.org/ontology/areaLand'][0]['value']
+    # areawater = matteo['http://dbpedia.org/ontology/areaWater'][0]['value']
+    # elevation = matteo['http://dbpedia.org/ontology/elevation'][0]['value']
     # populationtotalranking = matteo['http://dbpedia.org/ontology/populationTotalRanking'][0]['value']
-    utcoffset = matteo['http://dbpedia.org/ontology/utcOffset'][0]['value']
-    areatotal = matteo['http://dbpedia.org/ontology/areaTotal'][0]['value']
-    governmenttype = matteo['http://dbpedia.org/ontology/governmentType'][0]['value']
-    leadertype = matteo['http://dbpedia.org/ontology/leaderTitle'][0]['value']
+    # utcoffset = matteo['http://dbpedia.org/ontology/utcOffset'][0]['value']
+    # areatotal = matteo['http://dbpedia.org/ontology/areaTotal'][0]['value']
+    # governmenttype = matteo['http://dbpedia.org/ontology/governmentType'][0]['value'][28:]
+    # leadertype = matteo['http://dbpedia.org/ontology/leaderTitle'][0]['value']
     # populationdensity = matteo['http://dbpedia.org/ontology/populationDensity'][0]['value']
-    populationtotal = matteo['http://dbpedia.org/ontology/populationTotal'][0]['value']
+    # populationtotal = matteo['http://dbpedia.org/ontology/populationTotal'][0]['value']
     # establisheddate = matteo['http://dbpedia.org/property/establishedDate'][0]['value']
     # establishedyear = matteo['http://dbpedia.org/property/establishedDate'][1]['value']
-    latd = matteo['http://dbpedia.org/property/latd'][0]['value']
-    longd = matteo['http://dbpedia.org/property/longd'][0]['value']
-    longew = matteo['http://dbpedia.org/property/longew'][0]['value']
-    latns = matteo['http://dbpedia.org/property/latns'][0]['value']
+    # latd = matteo['http://dbpedia.org/property/latd'][0]['value']
+    # longd = matteo['http://dbpedia.org/property/longd'][0]['value']
+    # longew = matteo['http://dbpedia.org/property/longew'][0]['value']
+    # latns = matteo['http://dbpedia.org/property/latns'][0]['value']
     # areametro = matteo['http://dbpedia.org/ontology/areaMetro'][0]['value']
-    timezone = matteo['http://dbpedia.org/ontology/timeZone'][0]['value']
+    # timezone = matteo['http://dbpedia.org/ontology/timeZone'][0]['value'][28:]
 
-    print(areacode, arealand, areawater, elevation, utcoffset, areatotal,
-          governmenttype, leadertype, populationtotal, latd, longd, longew, latns,
-          timezone)
+    # print(areacode, arealand, areawater, elevation, utcoffset, areatotal,
+    #       governmenttype, leadertype, populationtotal, latd, longd, longew, latns,
+    #       timezone)
 
-    if c>10:
-        break
-    else:
-        c+=1
-# print(State,Coordinates)
+    # if c>30:
+    #     break
+    # else:
+    #     c+=1
+# print(information)
+
+for k,v in information.items():
+    df[k]=v
+print (df)
