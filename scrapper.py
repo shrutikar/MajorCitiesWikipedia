@@ -61,7 +61,5 @@ for link in Link:
             information[k].append("N/A")
 for k,v in information.items():
     df[k]=v
-for k,v in information.items():
-    print (k,information[k])
 
 df.to_csv("MajorCities.csv",index=False,encoding='utf-8-sig')
