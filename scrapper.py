@@ -1,4 +1,4 @@
-import requests
+import requests, re
 from bs4 import BeautifulSoup
 import pandas as pd
 
@@ -8,11 +8,15 @@ My_table = soup.find("table",{"class":"wikitable sortable"})
 links = My_table
 City= []
 Link=[]
+d=0
 for link in links.findAll('tr'):
     if link.findAll('td'):
         City.append(str(link.findAll('td')[1].find_all('a')[0].get("title")))
         Link.append(str(link.findAll('td')[1].find_all('a')[0].get("href").replace("%E2%80%93","-")))
-
+    # if d>10:
+    #     break
+    # else:
+    #     d+=1
 df=pd.DataFrame()
 df['City']=City
 c=0
@@ -29,9 +33,9 @@ information ={
     'leaderTitle' : [],
     'populationDensity' : [],
     'populationTotal' : [],
-    'establishedDate' : [],
-    'latd': [],
-    'longd': [],
+    # 'establishedDate' : [],
+    # 'latd': [],
+    # 'longd': [],
     'areaMetro' : [],
     'timeZone' : []
 }
@@ -40,14 +44,24 @@ for link in Link:
     data = requests.get('http://dbpedia.org/data/'+link[6:]+'.json').json()
     uri = data['http://dbpedia.org/resource/'+link[6:]]
     for k,v in information.items():
-        if 'http://dbpedia.org/ontology/'+k in uri and k != 'timeZone' and k != 'governmentType':
-            information[k].append(uri['http://dbpedia.org/ontology/' + k][0]['value'])
-        elif 'http://dbpedia.org/ontology/'+k in uri and (k == 'governmentType' or k == 'timeZone'):
-            information[k].append(uri['http://dbpedia.org/ontology/' + k][0]['value'][28:])
-        else:
-            information[k].append(None)
+        if 'http://dbpedia.org/ontology/'+k in uri and k=='areaCode':
+            temp = str(uri['http://dbpedia.org/ontology/' + k][0]['value'])\
+                .replace("&minus;", "-").replace(":00", "").replace("−", "-")\
+                .replace("&",",").replace(",",", ").replace("/",", ").replace("and",", ")
+            temp = re.sub("[^0-9^,^ ]","",temp)
+            information[k].append(temp)
 
+        elif 'http://dbpedia.org/ontology/'+k in uri and k != 'timeZone' and k != 'governmentType':
+            information[k].append(str(uri['http://dbpedia.org/ontology/' + k][0]['value'])
+                                  # .replace("&",",").replace("and",",").replace("/",",")
+                                  .replace("&minus;","-").replace(":00","").replace("−","-"))
+        elif 'http://dbpedia.org/ontology/'+k in uri and (k == 'governmentType' or k == 'timeZone'):
+            information[k].append(uri['http://dbpedia.org/ontology/' + k][0]['value'][28:].replace("–"," ").replace("_"," "))
+        else:
+            information[k].append("N/A")
 for k,v in information.items():
     df[k]=v
-print (df)
-df.to_csv("MajorCities.csv", sep='\t', encoding='utf-8')
+for k,v in information.items():
+    print (k,information[k])
+
+df.to_csv("MajorCities.csv",index=False,encoding='utf-8-sig')
