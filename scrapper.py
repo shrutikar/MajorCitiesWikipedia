@@ -152,7 +152,7 @@ def scrap_page(COL2):
         # header = col_row.findAll('th')
         if cty2.split(",")[-1].lower().strip() == 'united states':
             if cty2.split(",")[0] in df2["city"].tolist():
-                living[cty2.split(",")[0]] = data2
+                living2[cty2.split(",")[0]] = data2
             elif cty2.split(",")[0].lower().strip() == 'new york':
                 living2['New York City'] = data2
     return living2
@@ -165,7 +165,7 @@ def scrap_other(COL3):
         cty = raw[0]
         hours = raw[1].split(":")[1][:-3].strip("hours").strip()
         if cty in df2["city"].tolist():
-            traffic3[cty] = hours
+            traffic3[cty] = float(hours.replace("hours","").strip())
     return traffic3
 
 if __name__=='__main__':
