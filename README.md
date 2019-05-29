@@ -31,4 +31,4 @@ The scipt scrapper.py is designed to demonstrate Web Scrapping Unconventional Da
 6. Additional data can be collected for these cities from other webpages. Since there was no particular usecase for this dataset, [Cost of Living in Major Cities in North America](https://www.numbeo.com/cost-of-living/region_rankings.jsp?title=2019&region=021) , []() have been scrapped for demonstration.
 
 #### Note
-DBpedia was also explored during this assignment. On comparison with scrapped wikipedia data and DBpedia data, DBpedia data seemed to be outdated. This may be suitable for research purpose. The script is more focused to capture recent data availlable.
+DBpedia was also explored during this project. On comparison with scrapped wikipedia data, DBpedia data seemed to be outdated which may be suitable for research purpose. In our case, the script is more focused to capture recent data availlable.
