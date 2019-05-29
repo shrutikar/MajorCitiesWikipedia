@@ -36,10 +36,11 @@ def clean_header(string):
 
 def rearrange(df):
     d = df.columns.tolist()
-    r = d.index('Rank2018')
+    r = d.index('rank')
     c = d.index('city')
     s = d.index('state')
-    seq = ['Rank2018','city','state']+d[:c]+d[c+1:r]+d[r+1:s]+d[s+1:]
+    print (r,c,s)
+    seq = ['rank','city','state']+d[:c-1]+d[c+1:r-1]+d[r+1:s-1]+d[s+1:]
     df = df[seq]
     return df
 
@@ -76,7 +77,7 @@ Link=[]
 d=0
 for link in table.findAll('tr'):
     col_headers = {
-        'Rank2018': None,
+        'rank': None,
         'city': None,
         'state': None,
         'Estimate2018': None,
@@ -105,7 +106,7 @@ for link in table.findAll('tr'):
                 col_headers[k]=clean_unit(link.findAll('td')[i].find(text=True))
 
         lnk = str(link.findAll('td')[1].find_all('a')[0].get("href").replace("%E2%80%93","-"))
-        Link.append(lnk)
+        # Link.append(lnk)
         soup = web_scrapper('https://en.wikipedia.org/'+lnk)
         city = soup.find("table", {"class": "infobox"})
         for row in city.findAll('tr'):
@@ -113,13 +114,16 @@ for link in table.findAll('tr'):
                 if len(row.findAll('th')) == 1 and len(row.findAll('td')) == 1:
                     h = clean_header(row.findAll('th')[0].text)
                     dat = row.findAll('td')[0].text.strip()
-                    col_headers[h]=dat
+                    if col_headers.get(h):
+                        continue
+                    else:
+                        col_headers[h]=dat
         completedata.append(col_headers)
 
-    # if d>10:
-    #     break
-    # else:
-    #     d+=1
+    if d>10:
+        break
+    else:
+        d+=1
 
 
 df2=pd.DataFrame(completedata)
@@ -128,8 +132,34 @@ df2 = rearrange(df2)
 df2 = drop_less_informative_columns(df2)
 
 print(df2.columns.tolist())
-df2.to_csv("MajorCities.csv",index=False,encoding='utf-8-sig')
 
+
+#to be cleaned : city, state , rank appearing twice
+#to be cleaned things in bracket mayor , incorporated, metro, type, water, zip code
+
+new_data = {}
+print(df2["city"])
+soup = web_scrapper('https://www.numbeo.com/cost-of-living/region_rankings.jsp?title=2019&region=021')
+COL = soup.find("table", {"id": "t2"})
+COL_body = COL.find('tbody')
+COL_rows = COL_body.find_all('tr')
+living = {}
+for col_row in COL_rows:
+    cty = col_row.findAll('td')[1].text
+    data = col_row.findAll('td')[2].text
+    # header = col_row.findAll('th')
+    if cty.split(",")[-1].lower().strip() == 'united states' :
+        if cty.split(",")[0] in df2["city"].tolist():
+            living[cty.split(",")[0]]=data
+        elif cty.split(",")[0].lower().strip()== 'new york':
+            living['New York City']=data
+
+lst=[]
+for e in df2["city"].tolist():
+    lst.append(living.get(e))
+
+df2["Cost of living"] = lst
+df2.to_csv("MajorCities.csv", index=False, encoding='utf-8-sig')
 
 
 # data = pd.read_html(str(table))
