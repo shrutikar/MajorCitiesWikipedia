@@ -28,7 +28,7 @@ The scipt scrapper.py is designed to demonstrate Web Scrapping Unconventional Da
 3. While scarping, regex is used to clean the data format. Other formats like location, units are also handled while scraping.
 4. Collected data headers may be redundant or may contain non-significant data. Therefore, columns with same data but different header names are combined.
 5. Null values are handled by dropping the columns with 60% or more null values.
-6. Additional data can be collected for these cities from other webpages like:. Since there was no particular usecase for this dataset, [Cost of Living in Major Cities in North America](https://www.numbeo.com/cost-of-living/region_rankings.jsp?title=2019&region=021) , []() have been scrapped for demonstration.
+6. Additional data can be collected for these cities from other webpages. Since there was no particular usecase for this dataset, [Cost of Living in Major Cities in North America](https://www.numbeo.com/cost-of-living/region_rankings.jsp?title=2019&region=021) , []() have been scrapped for demonstration.
 
 #### Note
 DBpedia was also explored during this assignment. On comparison with scrapped wikipedia data and DBpedia data, DBpedia data seemed to be outdated. This may be suitable for research purpose. The script is more focused to capture recent data availlable.
