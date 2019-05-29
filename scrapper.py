@@ -37,20 +37,33 @@ def clean_header(string):
 def rearrange(df):
     d = df.columns.tolist()
     r = d.index('Rank2018')
-    c = d.index('City')
+    c = d.index('city')
     s = d.index('state')
-    seq = ['Rank2018','City','state']+d[:c]+d[c+1:r]+d[r+1:s]+d[s+1:]
+    seq = ['Rank2018','city','state']+d[:c]+d[c+1:r]+d[r+1:s]+d[s+1:]
     df = df[seq]
-    print(d,r,c,s)
     return df
 
 def redundant_columns(s):
-    old={'city statu':'city status','consolidated':'consolidated city-county','foundation':'founded','founded a':'founded by',
-         'gni feature id':'gni id','zip code prefixe':'zip code','zip codes':'zip code'}
-    value = old.get(s)
-    return value
+    #found manually
+    if "incorporated" in s:
+        return "incorporated"
+    elif "airport" in s:
+        return "airport"
+    else:
+        old={'city statu':'city status','consolidated':'consolidated city-county','foundation':'founded','founded a':'founded by',
+             'gni feature id':'gni id','zip code prefixe':'zip code','zip codes':'zip code','assemblymembers':'assembly member',
+             'assembly':'assembly member','assembly members':'assembly member','assemblymember':'assembly member','counties':'county',
+             '[[federal infor\nmation processing standards|fip code]]':'fip code','fip code\n0':'fip code'}
+
+        value = old.get(s)
+        return value
 
 def drop_less_informative_columns(df):
+    threshold = 0.6
+    b=df.isna().sum()[df.isna().sum()> 0]/len(df)
+    cols=b[b>threshold].index
+    df.drop(cols,inplace=True,axis=1)
+    df.drop(['density','estimate','area code'], inplace=True, axis=1) #redundant with other existing column
     return df
 
 wiki = "https://en.wikipedia.org/wiki/List_of_United_States_cities_by_population"
@@ -64,7 +77,7 @@ d=0
 for link in table.findAll('tr'):
     col_headers = {
         'Rank2018': None,
-        'City': None,
+        'city': None,
         'state': None,
         'Estimate2018': None,
         'Census2010': None,
@@ -100,8 +113,6 @@ for link in table.findAll('tr'):
                 if len(row.findAll('th')) == 1 and len(row.findAll('td')) == 1:
                     h = clean_header(row.findAll('th')[0].text)
                     dat = row.findAll('td')[0].text.strip()
-                    # print(h)
-                    # print(dat)
                     col_headers[h]=dat
         completedata.append(col_headers)
 
@@ -116,8 +127,8 @@ df2=pd.DataFrame(completedata)
 df2 = rearrange(df2)
 df2 = drop_less_informative_columns(df2)
 
-
-df2.to_csv("two.csv",index=False,encoding='utf-8-sig')
+print(df2.columns.tolist())
+df2.to_csv("MajorCities.csv",index=False,encoding='utf-8-sig')
 
 
 
