@@ -37,7 +37,6 @@ def rearrange(df):
     r = d.index('rank')
     c = d.index('city')
     s = d.index('state')
-    print (r,c,s)
     seq = ['rank','city','state']+d[:c-1]+d[c+1:r-1]+d[r+1:s-1]+d[s+1:]
     df = df[seq]
     return df
@@ -212,9 +211,8 @@ if __name__=='__main__':
                'Land Area2016 sqmi','Population Density2016 sqkm','Population Density2016 sqmi']
     for c in unit_cols:
         df2[c] = clean_unit_col(df2[c].tolist())
-        print(c)
         df2[c] = float_format(df2[c].tolist())
-
+    
     df2.to_csv("MajorCities.csv", index=False, encoding='utf-8-sig')
 
     # Major cities Data from DBpedia
