@@ -203,7 +203,7 @@ if __name__=='__main__':
 
     # Cleaning columns data changing formats
 
-    brack_cols=['mayor','elevation','type','water','metro','land']
+    brack_cols=['mayor','incorporated','demonym','fip code','gni id','elevation','type','water','metro','land']
     for c in brack_cols:
         df2[c] = remove_brackets(df2[c].tolist())
 
@@ -212,7 +212,7 @@ if __name__=='__main__':
     for c in unit_cols:
         df2[c] = clean_unit_col(df2[c].tolist())
         df2[c] = float_format(df2[c].tolist())
-    
+
     df2.to_csv("MajorCities.csv", index=False, encoding='utf-8-sig')
 
     # Major cities Data from DBpedia
